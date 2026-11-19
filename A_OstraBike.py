@@ -26,9 +26,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Cesta k dátam a vytvorenie priečinka outputs pre grafy a tabuľky
+# Cesta k dátam a priečinok outputs pre grafy a tabuľky uložený priamo v CESTA
 CESTA = r"C:\Users\matej\Downloads\A_OstraBike\A_OstraBike"
-os.makedirs("outputs", exist_ok=True)
+VYSTUPY = os.path.join(CESTA, "outputs")
+os.makedirs(VYSTUPY, exist_ok=True)
 
 # Základné farby a nastavenie grafov z hodín
 MODRA = "#2a78d6"
@@ -148,7 +149,7 @@ uzivatele["rok_narodenia"] = rok_nar
 print("Vyčistených nezmyselných rokov narodenia:", zle_roky)
 
 log_df = pd.DataFrame(log_cisteni, columns=["krok", "pocet_zmien", "zostava_riadkov"])
-log_df.to_csv("outputs/00_log_cisteni.csv", index=False)
+log_df.to_csv(os.path.join(VYSTUPY, "00_log_cisteni.csv"), index=False)
 print("Čistých jázd:", len(df), "z", povodny_pocet)
 
 # =====================================================================================
@@ -245,7 +246,7 @@ osi[1].legend(frameon=False, loc="upper left")
 osi[1].set_title(f"Medziročne (marec–október) denný dopyt vzrástol o {zmena_yoy_pct:+.1f} % ({priemer_2026:.0f} vs. {priemer_2025:.0f})", loc="left")
 
 fig.tight_layout()
-fig.savefig("outputs/01_pocasi_a_sezona.png", dpi=120)
+fig.savefig(os.path.join(VYSTUPY, "01_pocasi_a_sezona.png"), dpi=120)
 plt.show()
 
 # =====================================================================================
@@ -281,7 +282,7 @@ osi[0].set_ylabel("Deň v týždni")
 fig.suptitle(f"Predplatné tvorí {podiel_pred:.0f} % jázd so špičkou v pracovné dni o {spicka_pred}:00, turisti jazdia hlavne cez víkend okolo {spicka_tur}:00",
              x=0.01, ha="left", fontsize=11.5, fontweight="bold")
 fig.tight_layout()
-fig.savefig("outputs/02_heatmapa_uzivatele.png", dpi=120)
+fig.savefig(os.path.join(VYSTUPY, "02_heatmapa_uzivatele.png"), dpi=120)
 plt.show()
 
 # =====================================================================================
@@ -297,7 +298,7 @@ kola_stat["podil_kratkych_pct"] = kola_stat["kratke_jazdy"] / kola_stat["celkom_
 assert kola_stat["celkom_jazd"].sum() == len(df)
 
 top15_kola = kola_stat[kola_stat["celkom_jazd"] >= 30].sort_values("podil_kratkych_pct", ascending=False).head(15)
-top15_kola.to_csv("outputs/03_problemova_kola_top15.csv", index=False)
+top15_kola.to_csv(os.path.join(VYSTUPY, "03_problemova_kola_top15.csv"), index=False)
 
 podil_platenych = (df["price_czk"] > 0).mean()
 priemer_platba = df.loc[df["price_czk"] > 0, "price_czk"].mean()
@@ -306,7 +307,7 @@ odhad_usle_trzby = kratke_bez_trzby * podil_platenych * priemer_platba
 
 median_podil = kola_stat["podil_kratkych_pct"].median()
 najhorsi_bicykel = top15_kola.iloc[0]
-print(f"Q3 | Medián: {median_podil:.1f} % | Najhorší: {najhorsi_bicykel['bike_id']} ({najhorsi_bicykel['podil_kratkych_pct']:.1f} %) | Odhad ušlých tržieb: {odhad_usle_trzby:,.0f} Kč")
+print(f"Q3 | Medián: {median_podil:.1f} % | Najhorší: {najhorsi_bicykel['bike_id']} ({najhorsi_bicykel['podil_kratkych_pct']:.1f} %) | Odhad ušlých tržeb: {odhad_usle_trzby:,.0f} Kč")
 
 fig, osi = plt.subplots(1, 2, figsize=(13, 5))
 osi[0].hist(df.loc[df["dlzka_min"] <= 45, "dlzka_min"], bins=45, color=MODRA, edgecolor="white")
@@ -326,7 +327,7 @@ osi[1].legend(frameon=False, loc="lower right")
 osi[1].set_title(f"Najhorší bicykel {najhorsi_bicykel['bike_id']} má {najhorsi_bicykel['podil_kratkych_pct']:.1f} % krátkych jázd (modrá = klasický, oranžová = elektro)", loc="left")
 
 fig.tight_layout()
-fig.savefig("outputs/03_zdravi_kol.png", dpi=120)
+fig.savefig(os.path.join(VYSTUPY, "03_zdravi_kol.png"), dpi=120)
 plt.show()
 
 # =====================================================================================
@@ -374,7 +375,7 @@ osi[1].legend(frameon=False, loc="upper right")
 osi[1].set_title(f"Ostatní používatelia (jún–október): zmena o {ost_zmena:+.1f} %", loc="left")
 
 fig.tight_layout()
-fig.savefig("outputs/04_zmena_ceny.png", dpi=120)
+fig.savefig(os.path.join(VYSTUPY, "04_zmena_ceny.png"), dpi=120)
 plt.show()
 
 # =====================================================================================
@@ -403,7 +404,7 @@ pomer_nove_pct = nove_priemer / stare_priemer * 100
 
 najvacsi_odliv = st_tab.sort_values("cisty_tok").iloc[0]
 najvacsi_priliv = st_tab.sort_values("cisty_tok", ascending=False).iloc[0]
-st_tab.to_csv("outputs/05_stanice_toky.csv", index=False)
+st_tab.to_csv(os.path.join(VYSTUPY, "05_stanice_toky.csv"), index=False)
 
 print(f"Q5 | Odliv: {najvacsi_odliv['name']} ({najvacsi_odliv['cisty_tok']:+.0f}) | Príliv: {najvacsi_priliv['name']} ({najvacsi_priliv['cisty_tok']:+.0f})")
 print(f"Q5 | Nové: {nove_priemer:.1f} vs. staré: {stare_priemer:.1f} ({pomer_nove_pct:.0f} %)")
@@ -428,7 +429,7 @@ osi[1].set_ylabel("Priemer odchodov na stanicu za deň (jazdy/deň)")
 osi[1].set_title(f"Nové stanice majú {pomer_nove_pct:.0f} % denného výkonu starých staníc ({nove_priemer:.1f} vs. {stare_priemer:.1f})", loc="left")
 
 fig.tight_layout()
-fig.savefig("outputs/05_stanice_mapa_a_nove.png", dpi=120)
+fig.savefig(os.path.join(VYSTUPY, "05_stanice_mapa_a_nove.png"), dpi=120)
 plt.show()
 
 print("Hotovo, výstupy sú uložené v priečinku outputs/.")

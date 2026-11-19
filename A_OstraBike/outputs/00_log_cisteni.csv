@@ -1,0 +1,8 @@
+krok,pocet_zmien,zostava_riadkov
+Duplicity (celé + trip_id),400,39600
+Dva formáty času (zjednotené),1402,39600
+Koniec pred začiatkom,140,39460
+Jazdy dlhšie ako 24 h,50,39410
+distance_km (čiarka -> číslo),1570,39410
+Stanice mimo číselník,179,39231
+Záporné ceny,35,39196
